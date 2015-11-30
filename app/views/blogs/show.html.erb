@@ -1,0 +1,78 @@
+<%#= @blog.comments.inspect %>
+<%#= @post.inspect %>
+
+<%# blog title --------------------------------------------------------------- %>
+<h1 class="lobster text-center"><%= @blog.title %></h1>
+<div class="blog-info col-md-12">
+
+<%# created by and created date ---------------------------------------------- %>
+  <div class="col-md-5 border-right">
+    BY <%= @blog.user.username.upcase %><br>
+    <%= @blog.created_at.strftime("%B %d, %Y @ %I:%M %P").upcase %>
+  </div>
+
+<%# favorite  ---------------------------------------------------------------- %>
+  <div class="col-md-4 text-right" style="transform: translateY(50%)">
+    <!-- <a class="font-16 text-info" rel="nofollow" data-method="delete" href="/posts/5/likes/14"><i class="fa fa-heart-o"></i> favorite</a> -->
+
+    <% if user_signed_in? && @blog.favorite_by?(current_user) %>
+      <%= link_to "<i class='fa fa-heart'></i> favorite".html_safe, post_favorite_path(@blog, @blog.favorite_for(current_user)), class: "font-16 text-info", method: :delete %>
+    <% else %>
+      <%= link_to "<i class='fa fa-heart-o'></i> favorite".html_safe, post_favorites_path(@blog), class: "font-16 text-info", method: :post %>
+    <% end %>
+  </div>
+
+<%# top comment count -------------------------------------------------------- %>
+  <div class="col-md-3 text-right border-left" style="transform: translateY(50%)">
+    <i class="fa fa-comment-o"></i> <%= pluralize(@blog.comments.count, "Comment") %>
+  </div>
+</div>
+
+<%# tags --------------------------------------------------------------------- %>
+<!-- <div class="blog-content clearfix">
+  tags:
+</div> -->
+
+<% if @blog.tags.any? %>
+  <i class="fa fa-tags"></i>
+  <% @blog.tags.each do |tag| %>
+    <div class="label label-primary"><%= tag.name %></div>
+  <% end %>
+<% end %>
+
+<%# render blog content ------------------------------------------------------ %>
+<div class="blog-border">
+  <div class="blog-content">
+    <%= simple_format(@blog.body, {}, :sanitize => false) %>
+  </div>
+
+<%# input comment box -------------------------------------------------------- %>
+  <hr>
+  <div>
+    <%# ----- moved to partial --------------------- %>
+    <%= render "/comments/comment_form" %>
+  </div>
+  <hr>
+
+<%# comments list ------------------------------------------------------------ %>
+  <h4><span id="comment-count"><%= @blog.comments.count %></span>
+    <%= @blog.comments.count > 0 ? "Comment".pluralize(@blog.comments.count) : "Comment" %>
+  </h4>
+  <hr>
+  <div id="comments-list">
+  <% if @blog.comments.present? %>
+      <% @blog.comments.order("id DESC").each do |comment| %>
+          <%# ----- moved to partial --------------------- %>
+          <%= render "/comments/comment", comment: comment %>
+      <% end %>
+  <% else %>
+    <div id="no-comments">
+      <p class="top-30">No comment at this moment. Be the first to comment this question by submit your comment below</p>
+      <hr>
+    </div>
+  <% end %>
+</div>
+
+
+</div>
+<%#= render "login" %>

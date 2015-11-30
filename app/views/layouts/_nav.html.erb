@@ -1,0 +1,39 @@
+<header class="header">
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top is-visible is-fixed">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <%= link_to "the sound of life", root_path , class: "navbar-brand lobster" %>
+      </div>
+
+      <div class="collapse navbar-collapse" id="custom-collapse">
+        <ul class="nav navbar-nav">
+          <li><%= link_to "about", about_path %></li>
+        </ul>
+        <!-- #search navbar -->
+        <%= form_tag search_path, class: "navbar-form navbar-left", role: "search" do %>
+          <div class="form-group">
+            <%= text_field_tag(:search, nil, class: "form-control", placeholder: "search blog ...") %>
+          </div>
+        <% end %>
+
+        <ul class="nav navbar-nav navbar-right">
+          <% if user_signed_in? %>
+            <li><a>hello <%= current_user.username %></a></li>
+            <% if @blog %>
+              <% if current_user.favorites.count > 0 %>
+              <li><%= link_to "#{current_user.favorites.count} favorite blogs", post_favorites_path(@blog, @blog.favorite_for(current_user)) %></li>
+              <% end %>
+            <% end %>
+            <li><%= link_to "log out", sessions_path, method: :delete %></li>
+            <% if current_user.admin %>
+              <li><%= link_to "control panel", posts_path %></li>
+            <% end %>
+
+          <% else %>
+            <li><%= link_to "log in","javascript:void(0);", id: "login" %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div><!-- .container -->
+  </nav>
+</header>
